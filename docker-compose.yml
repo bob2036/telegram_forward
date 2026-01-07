@@ -1,26 +1,24 @@
 version: '3.8'
 
 services:
-  app:
+  telegram-forwarder:
     build: .
+    container_name: telegram-forwarder
     restart: unless-stopped
     
     environment:
-      - API_ID=${API_ID:-31975468}
-      - API_HASH=${API_HASH:-87be4666f1aaa47bb3f7a643793f9bb5}
-      - PHONE=${PHONE:-+33658026889}
-      - SOURCE_CHAT=${SOURCE_CHAT:-@XCommasBot}
-      - TARGET_CHAT=${TARGET_CHAT:-@n8nph007bot}
+      - API_ID=31975468
+      - API_HASH=87be4666f1aaa47bb3f7a643793f9bb5
+      - PHONE=+33658026889
+      - SOURCE_CHAT=@XCommasBot
+      - TARGET_CHAT=@n8nph007bot
       - SESSION_PATH=/app/sessions/chat_forward_session
-      - TELEGRAM_CODE=${TELEGRAM_CODE:-}
-      - TELEGRAM_PASSWORD=${TELEGRAM_PASSWORD:-}
-      - FORCE_RECREATE_SESSION=${FORCE_RECREATE_SESSION:-false}
     
     volumes:
-      # Volume nommé pour la persistance
       - telegram_sessions:/app/sessions
     
-    command: python -u tg_forward.py
+    # Container reste actif pour usage manuel
+    command: tail -f /dev/null
 
 volumes:
   telegram_sessions:
