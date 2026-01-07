@@ -1,0 +1,87 @@
+📋 Procédure complète
+Étape 1 : Structure GitHub
+Créez un dépôt avec ces 4 fichiers :
+telegram-forwarder/
+├── Dockerfile              (version simple)
+├── docker-compose.yml      (version simple)
+├── requirements.txt        (inchangé)
+└── tg_forward.py          (version simple propre)
+Étape 2 : Déployer dans Coolify
+
+Nouvelle application → GitHub repository
+Coolify détecte le docker-compose.yml
+Deploy
+
+Étape 3 : Se connecter au container
+Via Coolify :
+
+Onglet Terminal → vous êtes directement dans le container
+
+Via SSH (si disponible) :
+bashdocker exec -it telegram-forwarder bash
+Étape 4 : Créer la session (première fois)
+Dans le terminal du container :
+bashpython tg_forward.py
+```
+
+Vous verrez :
+```
+🚀 TELEGRAM MESSAGE FORWARDER
+📱 Téléphone : +33658026889
+🔐 Connexion à Telegram...
+Please enter the code you received: _
+```
+
+**Entrez le code SMS**, puis si 2FA : **entrez le mot de passe**
+
+Une fois connecté :
+```
+✅ Connecté : Votre Nom
+✅ Source : XCommasBot (@XCommasBot)
+✅ Destination : n8nph007bot (@n8nph007bot)
+🟢 TRANSFERT ACTIF
+⏳ En attente de messages...
+Étape 5 : Lancer en tâche de fond avec nohup
+Une fois que ça fonctionne, arrêtez avec Ctrl+C, puis lancez en arrière-plan :
+bashnohup python -u tg_forward.py > /app/forwarder.log 2>&1 &
+Vérifier que ça tourne :
+bashps aux | grep tg_forward
+Voir les logs en temps réel :
+bashtail -f /app/forwarder.log
+Étape 6 : Automatiser au redémarrage (optionnel)
+Si vous voulez que ça démarre automatiquement, créez un script :start_forwarder.shCode #!/bin/bash
+# Script de démarrage automatique du forwarder
+
+LOG_FILE="/app/forwarder.log"
+
+echo "🚀 Démarrage du Telegram Forwarder..."
+
+# Vérifier si déjà en cours
+if pgrep -f "tg_forward.py" > /dev/null; then
+    echo "⚠️  Le forwarder est déjà en Ajoutez ce script dans le container, puis :
+bashchmod +x /app/start_forwarder.sh
+/app/start_forwarder.sh
+🎯 Commandes utiles
+bash# Démarrer
+nohup python -u tg_forward.py > /app/forwarder.log 2>&1 &
+
+# Voir les logs
+tail -f /app/forwarder.log
+
+# Arrêter
+pkill -f tg_forward.py
+
+# Vérifier le statut
+ps aux | grep tg_forward
+
+# Redémarrer
+pkill -f tg_forward.py && nohup python -u tg_forward.py > /app/forwarder.log 2>&1 &
+✅ Avantages de cette approche
+
+✅ Contrôle total : vous gérez tout manuellement
+✅ Pas de bugs complexes : script simple et direct
+✅ Débogage facile : vous voyez tout en temps réel
+✅ Session persistante : une fois créée, elle reste
+✅ Relance simple : juste une commande
+
+C'est beaucoup plus fiable ! Créez ces fichiers, déployez dans Coolify, et connectez-vous au terminal pour lancer manuellement. 🚀
